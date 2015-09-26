@@ -1,0 +1,9 @@
+[submodule "deeppy"]
+	path = deeppy
+	url = https://github.com/andersbll/deeppy
+[submodule "neural_artistic_style"]
+	path = neural_artistic_style
+	url = https://github.com/andersbll/neural_artistic_style
+[submodule "cudarray"]
+	path = cudarray
+	url = https://github.com/andersbll/cudarray
