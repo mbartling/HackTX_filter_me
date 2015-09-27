@@ -354,29 +354,10 @@
 				contentType: false,
 				cache: false,
 				processData: false,
-				success: function(data) {
-							console.log(i);
-							var w = document.getElementById("preset"+i).offsetWidth;
-							var h = document.getElementById("preset"+i).offsetHeight;
-							var wFactor = w/(Math.max(0,data.width));
-							var hFactor = h/(Math.max(0,data.height));
-							if (wFactor >= hFactor) {
-								var newW = Math.round(data.width*wFactor);
-								var newH = Math.round(data.height*wFactor);
-							} else {
-								var newW = Math.round(data.width*hFactor);
-								var newH = Math.round(data.height*hFactor);
-							}
-							$(presets[i]).attr({
-								width:newW,
-								height:newH,
-								src:"/presets/"+i+".jpg"
-							});
-						}
+				success: presetOnload(i)
 			});
 		}
 	}
-<<<<<<< HEAD
 	function presetOnload(i) {
 		var w = document.getElementById("preset"+i).offsetWidth;
 		var h = document.getElementById("preset"+i).offsetHeight;
@@ -394,9 +375,7 @@
 			height:newH,
 			src:"/presets/"+i+".jpg"
 		});
-	} 
-=======
->>>>>>> 0a80f6b6fc7a95b5d2e9a957865bf541efaa7ceb
+	}
 	</script>
 </head>
 <body>
