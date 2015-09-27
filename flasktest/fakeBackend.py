@@ -58,7 +58,7 @@ def upload_filter():
             })
     return "error"
 
-@app.route("/uploads/<filename>")
+@app.route("/images/<filename>")
 def uploaded_file(filename):
     print 'hello'
     try:
@@ -68,4 +68,4 @@ def uploaded_file(filename):
         return redirect(url_for('index'))
 
 if __name__ == "__main__":
-    app.run()
+    app.run(host='0.0.0.0',port=80)
