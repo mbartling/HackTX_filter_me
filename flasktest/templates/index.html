@@ -6,7 +6,6 @@
 	body {
 		background: rgba(150,150,150,1);
  		background: -webkit-linear-gradient(left, #444444, #999999, #444444);
-		overflow:hidden;
 		font-family:Tahoma;
 		font-size:16pt;
 	}
@@ -19,6 +18,7 @@
 		color:blue;
 	}
 	#container {
+		overflow:hidden;
 		width: 98%;
 		height: 600px;
 		position: absolute;
@@ -65,6 +65,9 @@
 		text-align:center;
 		margin:auto;
 	}
+	#prompt1 {
+		height:300px;
+	}
 	.box {
 		border:1px solid black;
 		height:400px;
@@ -102,6 +105,32 @@
 		border:1px dashed #666666;
 		border-radius:10px;
 		padding:8px 12px;
+	}
+	/* gallery */
+	table {
+		border-spacing:0;
+	}
+	#galleryContainer {
+		background:#C5E5F0;
+		width:96%;
+		border:1px solid #666666;
+		border-collapse:collapse;
+		position:relative;
+	}
+	.galleryButton {
+		cursor:pointer;
+		width:7%;
+		background:#94C2D1;
+		border:1px solid #666666;
+	}
+	#galleryRow td {
+		width:12.5%;
+		height:100px;
+	}
+	#galleryTable {
+		width:400%;
+		transform:translateX(0%);
+		transition:transform 0.8s ease-in-out;
 	}
 	</style>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
@@ -180,8 +209,8 @@
 			cache: false,
 			processData:false,
 			success: function(data) {
-						var wFactor = w/(Math.max(0,data.width));
-						var hFactor = h/(Math.max(0,data.height));
+						var wFactor = w/(Math.max(1,data.width));
+						var hFactor = h/(Math.max(1,data.height));
 						if (wFactor >= hFactor) {
 							var newW = Math.round(data.width*wFactor);
 							var newH = Math.round(data.height*wFactor);
@@ -301,6 +330,51 @@
 					}
 		});
 	}
+	/* gallery */
+	var galleryOffset = 0;
+	function galleryMove(dir) {
+		galleryOffset -= dir*25;
+		if (galleryOffset <= -100 || galleryOffset > 0) galleryOffset += dir*25;
+		document.getElementById("galleryTable").style.transform = "translateX("+galleryOffset+"%)";
+	}
+	var presets = new Array();
+	function initGallery() {
+		for (var i=1;i<=6;i++) {
+			presets[i] = new Image();
+			presets[i].alt = i;
+			presets[i].onload = function(){
+				$('#preset'+this.alt).append($(this));
+			};
+			//get size data
+			$.ajax({
+				url: "/presetdata/"+i+".jpg",
+				type: "GET",
+				data: new FormData(), //blank
+				contentType: false,
+				cache: false,
+				processData: false,
+				success: function(data) {
+							var i = parseInt(this.url.charAt(12));
+							var w = document.getElementById("preset1").offsetWidth;
+							var h = document.getElementById("preset1").offsetHeight;
+							console.log(w);
+							var wFactor = w/(Math.max(1,data.width));
+							var hFactor = h/(Math.max(1,data.height));
+							if (wFactor >= hFactor) {
+								var newW = Math.round(data.width*wFactor);
+								var newH = Math.round(data.height*wFactor);
+							} else {
+								var newW = Math.round(data.width*hFactor);
+								var newH = Math.round(data.height*hFactor);
+							}
+							$(presets[i]).attr({
+								height:newH,
+								src:"/presets/"+i+".jpg"
+							});
+						}
+			});
+		}
+	}
 	</script>
 </head>
 <body>
@@ -309,7 +383,6 @@
 			<div class="back"><div id="preview2"></div></div>
 			<div class="front" id="prompt2">
 				Loading...
-				<p class="small">Or, <a href="javascript:void(0);" onClick="reset();">start over</a>?</p>
 			</div>
 		</div>
 		<div class="animate" id="equals">
@@ -319,11 +392,53 @@
 			<div class="back"><div id="preview1"></div></div>
 			<div class="front" id="prompt1">
 				<form id="upload1" action="" method="post" enctype="multipart/form-data">
-					<b>Now, choose a picture for a filter.</b>
+					<b>Now choose a picture for a filter.</b>
 					<p class="small">Drag and drop a file into this box<br>or upload one below.</p>
 					<p><input type="file" name="file" id="file1" autocomplete="off" onChange="submitted(null,1,false);"></p>
 				</form>
-				<p class="small">Or, <a href="javascript:void(0);" onClick="reset();">change the picture</a>?</p>
+				<p class="small">Or, choose one of our filters:</p>
+				<table id="galleryContainer" align="center">
+					<tr>
+						<td onClick="galleryMove(-1);" class="galleryButton">
+							&laquo;
+						</td>
+						<td style="width:86%;">
+							<div style="width:320px;overflow:hidden;">
+								<table id="galleryTable">
+									<tr id="galleryRow">
+										<td id="preset1" onClick="choosePreset(1);">
+											<img src="/presets/1.jpg" height=90 width=150>
+										</td>
+										<td id="preset2" onClick="choosePreset(2);">
+											<img src="/presets/2.jpg" height=90 width=150>
+										</td>
+										<td id="preset3" onClick="choosePreset(3);">
+											<img src="/presets/3.jpg" height=90 width=150>
+										</td>
+										<td id="preset4" onClick="choosePreset(4);">
+											<img src="/presets/4.jpg" height=90 width=150>
+										</td>
+										<td id="preset5" onClick="choosePreset(5);">
+											<img src="/presets/5.jpg" height=90 width=150>
+										</td>
+										<td id="preset6" onClick="choosePreset(6);">
+											<img src="/presets/6.jpg" height=90 width=150>
+										</td>
+										<td id="preset7" onClick="choosePreset(7);">
+											<img src="/presets/7.jpg" height=90 width=150>
+										</td>
+										<td id="preset8" onClick="choosePreset(8);">
+											<img src="/presets/8.jpg" height=90 width=150>
+										</td>
+									</tr>
+								</table>
+							</div>
+						</td>
+						<td onClick="galleryMove(1);" class="galleryButton">
+							&raquo;
+						</td>
+					</tr>
+				</table>
 			</div>
 		</div>
 		<div class="animate" id="arrow">

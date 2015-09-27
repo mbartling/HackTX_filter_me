@@ -3,13 +3,16 @@ from flask import render_template, request, jsonify
 from flask import redirect, url_for, send_file, send_from_directory
 from werkzeug import secure_filename
 from PIL import Image
-import os, subprocess, re
+import os, subprocess, re, time, random
 
 UPLOAD_FOLDER = 'images/'
 ALLOWED_EXTENSIONS = set(['jpg', 'jpeg', 'png'])
 
 CURRENT_IMG = ""
 CURRENT_FILTER = ""
+
+random.seed(time.gmtime())
+rind = 0
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -45,13 +48,7 @@ def upload_image():
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
         except Exception as e:
             print e
-
-        print 'hello'
-
         (width, height) = getImgDimensions(filename)
-
-        print ('abo')
-
         return jsonify({
             'imgFolder': app.config['UPLOAD_FOLDER'], 
             'imgName': filename,
@@ -83,6 +80,7 @@ def upload_filter():
 def getNewImg():
     global CURRENT_IMG
     global CURRENT_FILTER
+    global rind
 
     print 'here'
 
@@ -106,9 +104,10 @@ def getNewImg():
         os.path.join(app.config['UPLOAD_FOLDER'], CURRENT_FILTER1), 
         "ubuntu@ec2-52-27-76-110.us-west-2.compute.amazonaws.com:images/."])
     print 'c'
+    print rind
     subprocess.call(["ssh", "-i", "compute-node-keys.pem", 
         "ubuntu@ec2-52-27-76-110.us-west-2.compute.amazonaws.com", 
-        "rm", "-f", "images/out.png"])
+        "rm", "-f", "images/out_%d.png" % rind])
 
     #subprocess.call(["ssh", "-i", "compute-node-keys.pem", 
     #    "ubuntu@ec2-52-27-76-110.us-west-2.compute.amazonaws.com", 
@@ -118,16 +117,18 @@ def getNewImg():
     #    "python", "HackTX_filter_me/neural_artistic_style/neural_artistic_style.py", 
     #    "--subject", currentImgOnServer, "--style", currentFilterOnServer, 
     #    "--iterations", "75","--animations","images/animations" ,"--output", "images/out.png\""])
-    os.system("ssh -i compute-node-keys.pem ubuntu@ec2-52-27-76-110.us-west-2.compute.amazonaws.com \"export PATH=/usr/local/cuda/bin:$PATH;export PATH=$PATH:/usr/local/cuda-6.5/bin;export LD_LIBRARY_PATH=/usr/local/cuda-6.5/lib64:$LD_LIBRARY_PATH:/usr/local/lib;python HackTX_filter_me/neural_artistic_style/neural_artistic_style.py --subject %s --style %s --output images/out.png --iterations 50 --animation images/animate\"" % (currentImgOnServer, currentFilterOnServer ))
+    print 'c.5'
+    rind = random.randint(0, 5000000)
+    os.system("ssh -i compute-node-keys.pem ubuntu@ec2-52-27-76-110.us-west-2.compute.amazonaws.com \"export PATH=/usr/local/cuda/bin:$PATH;export PATH=$PATH:/usr/local/cuda-6.5/bin;export LD_LIBRARY_PATH=/usr/local/cuda-6.5/lib64:$LD_LIBRARY_PATH:/usr/local/lib;python HackTX_filter_me/neural_artistic_style/neural_artistic_style.py --subject %s --style %s --output images/out_%d.png --iterations 50 --animation images/animate\"" % (currentImgOnServer, currentFilterOnServer, rind))
     print 'd'
     subprocess.call(["scp", "-i", "compute-node-keys.pem", 
-        "ubuntu@ec2-52-27-76-110.us-west-2.compute.amazonaws.com:images/out.png", 
+        "ubuntu@ec2-52-27-76-110.us-west-2.compute.amazonaws.com:images/out_%d.png" % rind, 
         str(os.getcwd())+"/images/."])
 
     width, height = getImgDimensions('out.png')
     return jsonify({
             'imgFolder': app.config['UPLOAD_FOLDER'], 
-            'imgName': 'out.png',
+            'imgName': 'out_%d.png' % rind,
             'width': width,
             'height': height
             })
@@ -137,6 +138,23 @@ def getNewImg():
 def uploaded_file(filename):
     try:
         return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
+    except Exception as e:
+        print e
+        return redirect(url_for('index'))
+
+@app.route("/presetdata/<filename>")
+def preset_data(filename):
+    image = Image.open(os.path.join("presets/",filename))
+    width, height = image.size
+    return jsonify({
+            'width':width,
+            'height':height
+            })
+
+@app.route("/presets/<filename>")
+def preset_image(filename):
+    try:
+        return send_from_directory("presets/", filename)
     except Exception as e:
         print e
         return redirect(url_for('index'))
