@@ -356,19 +356,8 @@
 				processData: false,
 				success: function(data) {
 							var i = parseInt(this.url.charAt(12));
-							var w = document.getElementById("preset1").offsetWidth;
-							var h = document.getElementById("preset1").offsetHeight;
-							var wFactor = w/(Math.max(1,data.width));
-							var hFactor = h/(Math.max(1,data.height));
-							if (wFactor >= hFactor) {
-								var newW = Math.round(data.width*wFactor);
-								var newH = Math.round(data.height*wFactor);
-							} else {
-								var newW = Math.round(data.width*hFactor);
-								var newH = Math.round(data.height*hFactor);
-							}
+							newH = 100;
 							$(presets[i]).attr({
-								//width:newW,
 								height:newH,
 								src:"/presets/"+i+".jpg"
 							});
