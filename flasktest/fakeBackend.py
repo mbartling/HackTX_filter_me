@@ -135,9 +135,8 @@ def getNewImg():
 
 @app.route("/images/<filename>")
 def uploaded_file(filename):
-    print 'hello'
     try:
-        return send_file(app.config['UPLOAD_FOLDER'], filename)
+        return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
     except Exception as e:
         print e
         return redirect(url_for('index'))
@@ -168,4 +167,4 @@ def resize(filename):
 #   return out_image
 
 if __name__ == "__main__":
-    app.run()
+    app.run(host='0.0.0.0',port=80)
