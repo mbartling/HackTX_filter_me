@@ -43,7 +43,7 @@
 	}
 	.animate {
     	-webkit-transform: translateZ(0);
-		transition:all 1.2s ease-out;
+		transition:left 1.2s ease-out;
 	}
 	.back {
 		background:white;
@@ -71,6 +71,9 @@
 		width:25%;
 		position:absolute;
 		top:10%;
+	}
+	.highlight {
+		border:3px dashed red;
 	}
 	#box1 {
 		left:37%;
@@ -144,15 +147,18 @@
 		e.preventDefault();
 		e.stopPropagation();
 	}
-	function fileDropped0(e) {
+	function fileDropped(e,n) {
 		cancelEvent(e);
-		droppedFiles[0] = e.dataTransfer.files[0];
-		submitted(e,0,true);
+		droppedFiles[n] = e.dataTransfer.files[0];
+		submitted(e,n,true);
 	}
-	function fileDropped1(e) {
+	function draggedOver(e,n) {
 		cancelEvent(e);
-		droppedFiles[1] = e.dataTransfer.files[0];
-		submitted(e,1,true);
+		$('#box'+(n+1)).addClass("highlight");
+	}
+	function draggedOut(e,n) {
+		cancelEvent(e);
+		$('#box'+(n+1)).removeClass("highlight");
 	}
 	function submitted(e,n,dropped) {
 		w = document.getElementById("box"+(n+1)).offsetWidth;
@@ -224,12 +230,12 @@
 			return false;
 		}));
 		//drag & drop
-		document.getElementById("box1").addEventListener("drop",fileDropped0, false);
-		document.getElementById("box1").addEventListener("dragover",cancelEvent, false);
-		document.getElementById("box1").addEventListener("dragleave",cancelEvent, false);
-		document.getElementById("box2").addEventListener("drop",fileDropped1, false);
-		document.getElementById("box2").addEventListener("dragover",cancelEvent, false);
-		document.getElementById("box2").addEventListener("dragleave",cancelEvent, false);
+		document.getElementById("box1").addEventListener("drop",function(e){fileDropped(e,0);}, false);
+		document.getElementById("box1").addEventListener("dragover",function(e){draggedOver(e,0);}, false);
+		document.getElementById("box1").addEventListener("dragleave",function(e){draggedOut(e,0);}, false);
+		document.getElementById("box2").addEventListener("drop",function(e){fileDropped(e,1);}, false);
+		document.getElementById("box2").addEventListener("dragover",function(e){draggedOver(e,1);}, false);
+		document.getElementById("box2").addEventListener("dragleave",function(e){draggedOut(e,1);}, false);
 	});
 	function reset() {
 		imgs[0] = new Image();
