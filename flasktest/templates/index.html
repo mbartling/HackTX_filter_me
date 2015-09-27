@@ -273,28 +273,24 @@
 			cache: false,
 			processData: false,
 			success: function(data) {
-						if (data['imgName'] == "") {
-							setTimeout(intervalCheck,2000);
+						var wFactor = w/(Math.max(0,data.width));
+						var hFactor = h/(Math.max(0,data.height));
+						if (wFactor >= hFactor) {
+							var newW = Math.round(data.width*wFactor);
+							var newH = Math.round(data.height*wFactor);
+							document.getElementById("preview2").style.top = ((newH-h)/(-2))+"px";
+							document.getElementById("preview2").style.left = "0px";
 						} else {
-							var wFactor = w/(Math.max(0,data.width));
-							var hFactor = h/(Math.max(0,data.height));
-							if (wFactor >= hFactor) {
-								var newW = Math.round(data.width*wFactor);
-								var newH = Math.round(data.height*wFactor);
-								document.getElementById("preview2").style.top = ((newH-h)/(-2))+"px";
-								document.getElementById("preview2").style.left = "0px";
-							} else {
-								var newW = Math.round(data.width*hFactor);
-								var newH = Math.round(data.height*hFactor);
-								document.getElementById("preview2").style.top = "0px";
-								document.getElementById("preview2").style.left = ((newW-w)/(-2))+"px";
-							}
-							$(imgs[2]).attr({
-								width:newW,
-								height:newH,
-								src:"/"+data['imgFolder']+data['imgName']
-							});
+							var newW = Math.round(data.width*hFactor);
+							var newH = Math.round(data.height*hFactor);
+							document.getElementById("preview2").style.top = "0px";
+							document.getElementById("preview2").style.left = ((newW-w)/(-2))+"px";
 						}
+						$(imgs[2]).attr({
+							width:newW,
+							height:newH,
+							src:"/"+data['imgFolder']+data['imgName']
+						});
 					}
 		});
 	}
