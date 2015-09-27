@@ -1,16 +1,22 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Page Title</title>
+	<title>Filter Me</title>
 	<style>
 	body {
-		background:#A8A8A8;
+		background: rgba(150,150,150,1);
+ 		background: -webkit-linear-gradient(left, #444444, #999999, #444444);
 		overflow:hidden;
 		font-family:Tahoma;
 		font-size:16pt;
 	}
 	.small {
 		font-size:11pt;
+	}
+	a {
+		text-decoration: none;
+		font-weight:bold;
+		color:blue;
 	}
 	#container {
 		width: 98%;
@@ -30,6 +36,11 @@
 		width:100%;
 		height:100%;
 	}
+	#preview0, #preview1 {
+		position:absolute;
+		top:0;
+		left:0;
+	}
 	.animate {
     	-webkit-transform: translateZ(0);
 		transition:all 1.2s ease-out;
@@ -41,6 +52,7 @@
 		position:absolute;
 		top:0;
 		left:0;
+		overflow:hidden;
 	}
 	.front {
 		position:absolute;
@@ -122,6 +134,7 @@
 				moveElementLeft(box3,"70%");
 				moveElementLeft(arrow,"31%");
 				moveElementLeft(equals,"63.7%");
+				startChecking();
 				break;
 		}
 	}
@@ -160,27 +173,46 @@
 			cache: false,
 			processData:false,
 			success: function(data) {
+						var wFactor = w/(Math.max(0,data.width));
+						var hFactor = h/(Math.max(0,data.height));
+						if (wFactor >= hFactor) {
+							var newW = Math.round(data.width*wFactor);
+							var newH = Math.round(data.height*wFactor);
+							document.getElementById("preview"+n).style.top = ((newH-h)/(-2))+"px";
+							document.getElementById("preview"+n).style.left = "0px";
+						} else {
+							var newW = Math.round(data.width*hFactor);
+							var newH = Math.round(data.height*hFactor);
+							document.getElementById("preview"+n).style.top = "0px";
+							document.getElementById("preview"+n).style.left = ((newW-w)/(-2))+"px";
+						}
 						$(imgs[n]).attr({
-							width:w,
-							height:h,
+							width:newW,
+							height:newH,
 							src:"/"+data['imgFolder']+data['imgName']
-						})
-						changeStage(n+1);
+						});
 					}
 		});
 	}
 	var imgs = new Array();
 	imgs[0] = new Image();
 	imgs[1] = new Image();
+	imgs[2] = new Image();
 	$(document).ready(function(e) {
 		//preview image
 		$(imgs[0]).load(function(){
 			$('#preview0').append($(this));
 			document.getElementById("prompt0").style.display = "none";
+			setTimeout(function(){changeStage(1);},600);
 		});
 		$(imgs[1]).load(function(){
 			$('#preview1').append($(this));
 			document.getElementById("prompt1").style.display = "none";
+			setTimeout(function(){changeStage(2);},600);
+		});
+		$(imgs[2]).load(function(){
+			$('#preview2').append($(this));
+			document.getElementById("prompt2").style.display = "none";
 		});
 		//upload script
 		$("#upload0").on('submit',(function(e) {
@@ -199,42 +231,108 @@
 		document.getElementById("box2").addEventListener("dragover",cancelEvent, false);
 		document.getElementById("box2").addEventListener("dragleave",cancelEvent, false);
 	});
-	
+	function reset() {
+		imgs[0] = new Image();
+		imgs[1] = new Image();
+		imgs[2] = new Image();
+		$(imgs[0]).load(function(){
+			$('#preview0').append($(this));
+			document.getElementById("prompt0").style.display = "none";
+			setTimeout(function(){changeStage(1);},600);
+		});
+		$(imgs[1]).load(function(){
+			$('#preview1').append($(this));
+			document.getElementById("prompt1").style.display = "none";
+			setTimeout(function(){changeStage(2);},600);
+		});
+		$(imgs[2]).load(function(){
+			$('#preview2').append($(this));
+			document.getElementById("prompt2").style.display = "none";
+		});
+		document.getElementById("preview0").innerHTML = "";
+		document.getElementById("preview1").innerHTML = "";
+		document.getElementById("preview2").innerHTML = "";
+		document.getElementById("prompt0").style.display = "";
+		document.getElementById("prompt1").style.display = "";
+		document.getElementById("prompt2").style.display = "";
+		droppedFiles = [null,null];
+		document.getElementById("file0").value = "";
+		document.getElementById("file1").value = "";
+		changeStage(0);
+	}
+	var interval;
+	function startChecking() {
+		intervalCheck();
+	}
+	function intervalCheck() {
+		$.ajax({
+			url: "/img3",
+			type: "POST",
+			data: new FormData(), //blank
+			contentType: false,
+			cache: false,
+			processData: false,
+			success: function(data) {
+						if (data['imgName'] == "") {
+							setTimeout(intervalCheck,2000);
+						} else {
+							var wFactor = w/(Math.max(0,data.width));
+							var hFactor = h/(Math.max(0,data.height));
+							if (wFactor >= hFactor) {
+								var newW = Math.round(data.width*wFactor);
+								var newH = Math.round(data.height*wFactor);
+								document.getElementById("preview2").style.top = ((newH-h)/(-2))+"px";
+								document.getElementById("preview2").style.left = "0px";
+							} else {
+								var newW = Math.round(data.width*hFactor);
+								var newH = Math.round(data.height*hFactor);
+								document.getElementById("preview2").style.top = "0px";
+								document.getElementById("preview2").style.left = ((newW-w)/(-2))+"px";
+							}
+							$(imgs[2]).attr({
+								width:newW,
+								height:newH,
+								src:"/"+data['imgFolder']+data['imgName']
+							});
+						}
+					}
+		});
+	}
 	</script>
 </head>
 <body>
 	<div id="container">
 		<div class="box animate" id="box3">
-			<div class="back"></div>
-			<div class="front">
-				box3
+			<div class="back"><div id="preview2"></div></div>
+			<div class="front" id="prompt2">
+				Loading...
+				<p class="small">Or, <a href="javascript:void(0);" onClick="reset();">start over</a>?</p>
 			</div>
 		</div>
 		<div class="animate" id="equals">
 			=
 		</div>
 		<div class="box animate" id="box2">
-			<div class="back" id="preview1"></div>
+			<div class="back"><div id="preview1"></div></div>
 			<div class="front" id="prompt1">
 				<form id="upload1" action="" method="post" enctype="multipart/form-data">
 					<b>Now, choose a picture for a filter.</b>
 					<p class="small">Drag and drop a file into this box<br>or upload one below.</p>
-					<p><input type="file" name="file" id="file" autocomplete="off" onChange="submitted(null,1,false);">
-						<!--<br><input type="submit" value="Upload" id="sub1" disabled/>--></p>
+					<p><input type="file" name="file" id="file1" autocomplete="off" onChange="submitted(null,1,false);"></p>
 				</form>
+				<p class="small">Or, <a href="javascript:void(0);" onClick="reset();">change the picture</a>?</p>
 			</div>
 		</div>
 		<div class="animate" id="arrow">
 			&raquo;
 		</div>
 		<div class="box animate" id="box1">
-			<div class="back" id="preview0"></div>
+			<div class="back"><div id="preview0"></div></div>
 			<div class="front" id="prompt0">
 				<form id="upload0" action="" method="post" enctype="multipart/form-data">
 					<b>First, pick a picture to be styled.</b>
 					<p class="small">Drag and drop a file into this box<br>or upload one below.</p>
-					<p><input type="file" name="file" id="file" autocomplete="off" onChange="submitted(null,0,false);">
-						<!--<br><input type="submit" value="Upload" id="sub0" disabled/>--></p>
+					<p><input type="file" name="file" id="file0" autocomplete="off" onChange="submitted(null,0,false);"></p>
 				</form>
 			</div>
 		</div>
