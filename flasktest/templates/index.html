@@ -355,6 +355,7 @@
 				cache: false,
 				processData: false,
 				success: function(data) {
+							console.log(i);
 							var w = document.getElementById("preset"+i).offsetWidth;
 							var h = document.getElementById("preset"+i).offsetHeight;
 							var wFactor = w/(Math.max(0,data.width));
