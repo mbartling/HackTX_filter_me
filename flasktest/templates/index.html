@@ -159,7 +159,6 @@
 				moveElementLeft(box3,"143%");
 				moveElementLeft(arrow,"47%");
 				moveElementLeft(equals,"136.7%");
-				initGallery();
 				break;
 			case 2:
 				moveElementLeft(box1,"4%");
@@ -268,6 +267,7 @@
 		document.getElementById("box2").addEventListener("drop",function(e){fileDropped(e,1);}, false);
 		document.getElementById("box2").addEventListener("dragover",function(e){draggedOver(e,1);}, false);
 		document.getElementById("box2").addEventListener("dragleave",function(e){draggedOut(e,1);}, false);
+		initGallery();
 	});
 	function reset() {
 		imgs[0] = new Image();
