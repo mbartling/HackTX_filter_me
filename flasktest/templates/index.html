@@ -160,9 +160,22 @@
 			cache: false,
 			processData:false,
 			success: function(data) {
+						var wFactor = w/(data.width+1);
+						var hFactor = h/(data.height+1);
+						if (wFactor >= hFactor) {
+							var newW = Math.round(data.width*wFactor);
+							var newH = Math.round(data.height*wFactor);
+							document.getElementById("preview"+n).style.top = ((newH-h)/(-2))+"px";
+							document.getElementById("preview"+n).style.left = "0px";
+						} else {
+							var newW = Math.round(data.width*hFactor);
+							var newH = Math.round(data.height*hFactor);
+							document.getElementById("preview"+n).style.top = "0px";
+							document.getElementById("preview"+n).style.left = ((newW-w)/(-2))+"px";
+						}
 						$(imgs[n]).attr({
-							width:w,
-							height:h,
+							width:newW,
+							height:newH,
 							src:"/"+data['imgFolder']+data['imgName']
 						})
 						changeStage(n+1);
