@@ -267,6 +267,7 @@
 		document.getElementById("box2").addEventListener("drop",function(e){fileDropped(e,1);}, false);
 		document.getElementById("box2").addEventListener("dragover",function(e){draggedOver(e,1);}, false);
 		document.getElementById("box2").addEventListener("dragleave",function(e){draggedOut(e,1);}, false);
+		initGallery();
 	});
 	function reset() {
 		imgs[0] = new Image();
@@ -339,7 +340,7 @@
 		document.getElementById("galleryTable").style.transform = "translateX("+galleryOffset+"%)";
 	}
 	var presets = new Array();
-	function init() {
+	function initGallery() {
 		for (var i=1;i<=8;i++) {
 			presets[i] = new Image();
 			$(presets[i]).load(function(){
@@ -374,7 +375,6 @@
 			});
 		}
 	}
-	window.onload = init;
 	</script>
 </head>
 <body>
