@@ -343,9 +343,9 @@
 	function initGallery() {
 		for (var i=1;i<=8;i++) {
 			presets[i] = new Image();
+			presets[i].alt = i;
 			presets[i].onload = function(){
-				console.log(i);
-				$('#preset'+i).append($(this));
+				$('#preset'+this.alt).append($(this));
 			};
 			//get size data
 			$.ajax({
