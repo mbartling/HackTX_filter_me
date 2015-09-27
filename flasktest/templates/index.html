@@ -12,6 +12,11 @@
 	.small {
 		font-size:11pt;
 	}
+	a {
+		text-decoration: none;
+		font-weight:bold;
+		color:blue;
+	}
 	#container {
 		width: 98%;
 		height: 600px;
@@ -166,8 +171,8 @@
 			cache: false,
 			processData:false,
 			success: function(data) {
-						var wFactor = w/(data.width+1);
-						var hFactor = h/(data.height+1);
+						var wFactor = w/(Math.max(0,data.width));
+						var hFactor = h/(Math.max(0,data.height));
 						if (wFactor >= hFactor) {
 							var newW = Math.round(data.width*wFactor);
 							var newH = Math.round(data.height*wFactor);
@@ -218,7 +223,26 @@
 		document.getElementById("box2").addEventListener("dragover",cancelEvent, false);
 		document.getElementById("box2").addEventListener("dragleave",cancelEvent, false);
 	});
-	
+	function reset() {
+		imgs[0] = new Image();
+		imgs[1] = new Image();
+		$(imgs[0]).load(function(){
+			$('#preview0').append($(this));
+			document.getElementById("prompt0").style.display = "none";
+		});
+		$(imgs[1]).load(function(){
+			$('#preview1').append($(this));
+			document.getElementById("prompt1").style.display = "none";
+		});
+		document.getElementById("preview0").innerHTML = "";
+		document.getElementById("preview1").innerHTML = "";
+		document.getElementById("prompt0").style.display = "";
+		document.getElementById("prompt1").style.display = "";
+		droppedFiles = [null,null];
+		document.getElementById("file0").value = "";
+		document.getElementById("file1").value = "";
+		changeStage(0);
+	}
 	</script>
 </head>
 <body>
@@ -227,6 +251,7 @@
 			<div class="back"></div>
 			<div class="front">
 				box3
+				<p class="small">Or, <a href="javascript:void(0);" onClick="reset();">start over</a>?</p>
 			</div>
 		</div>
 		<div class="animate" id="equals">
@@ -238,9 +263,9 @@
 				<form id="upload1" action="" method="post" enctype="multipart/form-data">
 					<b>Now, choose a picture for a filter.</b>
 					<p class="small">Drag and drop a file into this box<br>or upload one below.</p>
-					<p><input type="file" name="file" id="file" autocomplete="off" onChange="submitted(null,1,false);">
-						<!--<br><input type="submit" value="Upload" id="sub1" disabled/>--></p>
+					<p><input type="file" name="file" id="file1" autocomplete="off" onChange="submitted(null,1,false);"></p>
 				</form>
+				<p class="small">Or, <a href="javascript:void(0);" onClick="reset();">change the picture</a>?</p>
 			</div>
 		</div>
 		<div class="animate" id="arrow">
@@ -252,8 +277,7 @@
 				<form id="upload0" action="" method="post" enctype="multipart/form-data">
 					<b>First, pick a picture to be styled.</b>
 					<p class="small">Drag and drop a file into this box<br>or upload one below.</p>
-					<p><input type="file" name="file" id="file" autocomplete="off" onChange="submitted(null,0,false);">
-						<!--<br><input type="submit" value="Upload" id="sub0" disabled/>--></p>
+					<p><input type="file" name="file" id="file0" autocomplete="off" onChange="submitted(null,0,false);"></p>
 				</form>
 			</div>
 		</div>
