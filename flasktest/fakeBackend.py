@@ -149,8 +149,9 @@ def getImgDimensions(filename):
 def resize(filename):
     max_size = (1024,1024)
 
-    image = Image.open(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-    out_image = re.sub("\.", "_transformed.", filename)
+    filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+    image = Image.open(filepath)
+    out_image = re.sub("\.", "_transformed.", filepath)
     #out_image = re.sub("jpeg", "jpg", out_image)
     image.thumbnail(max_size, Image.ANTIALIAS)
 
