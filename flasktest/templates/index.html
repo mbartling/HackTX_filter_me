@@ -159,6 +159,7 @@
 				moveElementLeft(box3,"143%");
 				moveElementLeft(arrow,"47%");
 				moveElementLeft(equals,"136.7%");
+				initGallery();
 				break;
 			case 2:
 				moveElementLeft(box1,"4%");
@@ -267,7 +268,6 @@
 		document.getElementById("box2").addEventListener("drop",function(e){fileDropped(e,1);}, false);
 		document.getElementById("box2").addEventListener("dragover",function(e){draggedOver(e,1);}, false);
 		document.getElementById("box2").addEventListener("dragleave",function(e){draggedOut(e,1);}, false);
-		initGallery();
 	});
 	function reset() {
 		imgs[0] = new Image();
@@ -357,8 +357,8 @@
 				processData: false,
 				success: function(data) {
 							var i = parseInt(this.url.charAt(12));
-							var w = document.getElementById("preset"+i).offsetWidth;
-							var h = document.getElementById("preset"+i).offsetHeight;
+							var w = document.getElementById("preset0").offsetWidth;
+							var h = document.getElementById("preset0").offsetHeight;
 							var wFactor = w/(Math.max(0,data.width));
 							var hFactor = h/(Math.max(0,data.height));
 							if (wFactor >= hFactor) {
