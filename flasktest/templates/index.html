@@ -160,7 +160,7 @@
 			cache: false,
 			processData:false,
 			success: function(data) {
-						$(img).attr({
+						$(imgs[n]).attr({
 							width:w,
 							height:h,
 							src:"/"+data['imgFolder']+data['imgName']
@@ -169,15 +169,16 @@
 					}
 		});
 	}
-	var img0 = new Image();
-	var img1 = new Image();
+	var imgs = new Array();
+	imgs[0] = new Image();
+	imgs[1] = new Image();
 	$(document).ready(function(e) {
 		//preview image
-		$(img0).load(function(){
+		$(imgs[0]).load(function(){
 			$('#preview0').append($(this));
 			document.getElementById("prompt0").style.display = "none";
 		});
-		$(img1).load(function(){
+		$(imgs[1]).load(function(){
 			$('#preview1').append($(this));
 			document.getElementById("prompt1").style.display = "none";
 		});
