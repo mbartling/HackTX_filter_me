@@ -1,12 +1,27 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
 <script type="text/javascript">
+var img = new Image();
+var formData;
+var droppedFile;
+var dropped = false;
 $(document).ready(function (e) {
+	//preview image
+	$(img).load(function(){
+	  $('#preview').append($(this));
+	});
+	//upload script
 	$("#uploadImage").on('submit',(function(e) {
 		e.preventDefault();
+		if (dropped) {
+			formData = new FormData();
+			formData.append('file',droppedFile);
+		} else {
+			formData = new FormData(this);
+		}
 		$.ajax({
 			url: "/img1",
 			type: "POST",
-			data: new FormData(this),
+			data: formData,
 			contentType: false,
 			cache: false,
 			processData:false,
@@ -19,19 +34,31 @@ $(document).ready(function (e) {
 		});
 		return false;
 	}));
+	//drag & drop
+	document.getElementById("dragFiles").addEventListener("drop",fileDropped, false);
+	document.getElementById("dragFiles").addEventListener("dragover",cancelEvent, false);
+	document.getElementById("dragFiles").addEventListener("dragleave",cancelEvent, false);
 });
-var img = new Image();
 
-$(img).load(function(){
-  $('#preview').append($(this));
-});
-
+function cancelEvent(e) {
+	e.preventDefault();
+	e.stopPropagation();
+}
+function fileDropped(e) {
+	cancelEvent(e);
+	droppedFile = e.dataTransfer.files[0];
+	dropped = true;
+	document.getElementById("dragFiles").innerHTML = "Uploaded: "+droppedFile.name;
+}
 
 </script>
 
 <form id="uploadImage" action="" method="post" enctype="multipart/form-data">
 	<div id="preview"></div>
-	<input type="file" name="file" id="file" required />
+	<input type="file" name="file" id="file" />
 	<input type="submit" value="Upload" class="submit" />
+	</div>
+	<div id="dragFiles" style="width:400px;height:200px;border:1px solid black;background:#AAAAAA;text-align:center;">
+		Drag images here.
 	</div>
 </form>
