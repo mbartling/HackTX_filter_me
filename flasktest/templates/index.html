@@ -348,7 +348,7 @@
 			//get size data
 			$.ajax({
 				url: "/presetdata/"+i+".jpg",
-				type: "POST",
+				type: "GET",
 				data: new FormData(), //blank
 				contentType: false,
 				cache: false,
@@ -378,7 +378,7 @@
 	</script>
 </head>
 <body>
-	<div id="container"> 
+	<div id="container">
 		<div class="box animate" id="box3">
 			<div class="back"><div id="preview2"></div></div>
 			<div class="front" id="prompt2">
