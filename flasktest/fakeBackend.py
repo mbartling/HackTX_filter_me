@@ -17,8 +17,8 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 @app.route("/", methods=["GET"])
 def index(filename=None):
     print('hello')
-    if (CURRENT_IMG is not None):
-        print(CURRENT_IMG)
+    #if (CURRENT_IMG is not None):
+    #    print(CURRENT_IMG)
     return render_template('index.html')
 
 def allowed_file(filename):
@@ -38,8 +38,20 @@ def upload_image():
         filename = secure_filename(file.filename)
         CURRENT_IMG = filename      
         print CURRENT_IMG  
-        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-        width, height = getImgDimensions(filename)
+
+        print os.path.join(app.config['UPLOAD_FOLDER'], filename)
+
+        try:
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        except Exception as e:
+            print e
+
+        print 'hello'
+
+        (width, height) = getImgDimensions(filename)
+
+        print ('abo')
+
         return jsonify({
             'imgFolder': app.config['UPLOAD_FOLDER'], 
             'imgName': filename,
@@ -110,7 +122,7 @@ def getNewImg():
     print 'd'
     subprocess.call(["scp", "-i", "compute-node-keys.pem", 
         "ubuntu@ec2-52-27-76-110.us-west-2.compute.amazonaws.com:images/out.png", 
-        str(os.getcwd())+"\images"])
+        str(os.getcwd())+"/images/."])
     print 'e'
     return jsonify({
         'data': 'data'
@@ -146,7 +158,7 @@ def resize(filename):
 
    name = os.path.join(app.config['UPLOAD_FOLDER'], filename)
    out_image = re.sub("\.", "_transformed.", filename)
-   subprocess.call(["convert", name, "-define", "jpeg:extent=400kb", os.path.join(app.config['UPLOAD_FOLDER'], out_image)])
+   subprocess.call(["convert", name, "-define", "jpeg:extent=200kb", os.path.join(app.config['UPLOAD_FOLDER'], out_image)])
    #image.thumbnail(max_size, Image.ANTIALIAS)
    #image.save(out_image)
    return out_image
