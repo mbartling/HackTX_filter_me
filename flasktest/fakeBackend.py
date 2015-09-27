@@ -147,25 +147,25 @@ def getImgDimensions(filename):
     (width, height) = image.size
     return width, height
 
-#def resize(filename):
-#    max_size = (1024,1024)
-#
-#    image = Image.open(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-#    out_image = re.sub("\.", "_transformed.", filename)
-#    out_image = re.sub("jpeg", "jpg", out_image)
-#    image.thumbnail(max_size, Image.ANTIALIAS)
-#    image.save(out_image, "JPEG")
-#    return out_image
-
 def resize(filename):
-   max_size = (1024,1024)
+    max_size = (1024,1024)
 
-   name = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-   out_image = re.sub("\.", "_transformed.", filename)
-   subprocess.call(["convert", name, "-define", "jpeg:extent=200kb", os.path.join(app.config['UPLOAD_FOLDER'], out_image)])
-   #image.thumbnail(max_size, Image.ANTIALIAS)
-   #image.save(out_image)
-   return out_image
+    image = Image.open(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+    out_image = re.sub("\.", "_transformed.", filename)
+    #out_image = re.sub("jpeg", "jpg", out_image)
+    image.thumbnail(max_size, Image.ANTIALIAS)
+
+    image.save(out_image, "JPEG")
+    return out_image.split('/')[-1].strip()
+
+#   max_size = (1024,1024)
+#
+#   name = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+#   out_image = re.sub("\.", "_transformed.", filename)
+#   subprocess.call(["convert", name, "-define", "jpeg:extent=200kb", os.path.join(app.config['UPLOAD_FOLDER'], out_image)])
+#   #image.thumbnail(max_size, Image.ANTIALIAS)
+#   #image.save(out_image)
+#   return out_image
 
 if __name__ == "__main__":
     app.run()
