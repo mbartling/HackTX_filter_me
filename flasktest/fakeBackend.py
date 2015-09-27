@@ -17,8 +17,8 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 @app.route("/", methods=["GET"])
 def index(filename=None):
     print('hello')
-    if (CURRENT_IMG is not None):
-        print(CURRENT_IMG)
+    #if (CURRENT_IMG is not None):
+    #    print(CURRENT_IMG)
     return render_template('index.html')
 
 def allowed_file(filename):
@@ -38,8 +38,20 @@ def upload_image():
         filename = secure_filename(file.filename)
         CURRENT_IMG = filename      
         print CURRENT_IMG  
-        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-        width, height = getImgDimensions(filename)
+
+        print os.path.join(app.config['UPLOAD_FOLDER'], filename)
+
+        try:
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        except Exception as e:
+            print e
+
+        print 'hello'
+
+        (width, height) = getImgDimensions(filename)
+
+        print ('abo')
+
         return jsonify({
             'imgFolder': app.config['UPLOAD_FOLDER'], 
             'imgName': filename,
@@ -67,42 +79,58 @@ def upload_filter():
             })
     return "error"
 
-@app.route("/getNewImage", methods=["POST"])
+@app.route("/img3", methods=["POST"])
 def getNewImg():
     global CURRENT_IMG
     global CURRENT_FILTER
 
-    CURRENT_IMG = resize(CURRENT_IMG)
-    CURRENT_FILTER = resize(CURRENT_FILTER)
+    print 'here'
 
-    currentImgOnServer = 'images/' + CURRENT_IMG
-    currentFilterOnServer = 'images/' + CURRENT_FILTER
+    CURRENT_IMG1 = resize(CURRENT_IMG)
+    CURRENT_FILTER1 = resize(CURRENT_FILTER)
 
+    print CURRENT_IMG1
+    print CURRENT_FILTER1
+
+    currentImgOnServer = 'images/' + CURRENT_IMG1
+    currentFilterOnServer = 'images/' + CURRENT_FILTER1
+    #currentImgOnServer = 'images/thecaptainsmall.jpg'
+    #currentFilterOnServer = 'images/manet.jpg'
     print 'a'
-    print CURRENT_IMG
+    print currentImgOnServer
     subprocess.call(["scp", "-i","compute-node-keys.pem", 
-        os.path.join(app.config['UPLOAD_FOLDER'], CURRENT_IMG), 
+        os.path.join(app.config['UPLOAD_FOLDER'], CURRENT_IMG1), 
         "ubuntu@ec2-52-27-76-110.us-west-2.compute.amazonaws.com:images/."])
     print 'b'
     subprocess.call(["scp", "-i","compute-node-keys.pem", 
-        os.path.join(app.config['UPLOAD_FOLDER'], CURRENT_FILTER), 
+        os.path.join(app.config['UPLOAD_FOLDER'], CURRENT_FILTER1), 
         "ubuntu@ec2-52-27-76-110.us-west-2.compute.amazonaws.com:images/."])
     print 'c'
     subprocess.call(["ssh", "-i", "compute-node-keys.pem", 
         "ubuntu@ec2-52-27-76-110.us-west-2.compute.amazonaws.com", 
         "rm", "-f", "images/out.png"])
-    subprocess.call(["ssh", "-i", "compute-node-keys.pem", 
-        "ubuntu@ec2-52-27-76-110.us-west-2.compute.amazonaws.com", 
-        "python", "HackTX_filter_me/neural_artistic_style/neural_artistic_style.py", 
-        "--subject", currentImgOnServer, "--style", currentFilterOnServer, 
-        "--iterations", "75", "--output", "images/out.png"])
+
+    #subprocess.call(["ssh", "-i", "compute-node-keys.pem", 
+    #    "ubuntu@ec2-52-27-76-110.us-west-2.compute.amazonaws.com", 
+    #    "\"export", "PATH=/usr/local/cuda/bin:$PATH;export", 
+    #    "PATH=$PATH:/usr/local/cuda-6.5/bin;export", 
+    #    "LD_LIBRARY_PATH=/usr/local/cuda-6.5/lib64:$LD_LIBRARY_PATH",
+    #    "python", "HackTX_filter_me/neural_artistic_style/neural_artistic_style.py", 
+    #    "--subject", currentImgOnServer, "--style", currentFilterOnServer, 
+    #    "--iterations", "75","--animations","images/animations" ,"--output", "images/out.png\""])
+    os.system("ssh -i compute-node-keys.pem ubuntu@ec2-52-27-76-110.us-west-2.compute.amazonaws.com \"export PATH=/usr/local/cuda/bin:$PATH;export PATH=$PATH:/usr/local/cuda-6.5/bin;export LD_LIBRARY_PATH=/usr/local/cuda-6.5/lib64:$LD_LIBRARY_PATH:/usr/local/lib;python HackTX_filter_me/neural_artistic_style/neural_artistic_style.py --subject %s --style %s --output images/out.png --iterations 50 --animation images/animate\"" % (currentImgOnServer, currentFilterOnServer ))
     print 'd'
     subprocess.call(["scp", "-i", "compute-node-keys.pem", 
-        "ubuntu@ec2-52-27-76-110.us-west-2.compute.amazonaws.com:images/out.png"])
-    print 'e'
+        "ubuntu@ec2-52-27-76-110.us-west-2.compute.amazonaws.com:images/out.png", 
+        str(os.getcwd())+"/images/."])
+
+    width, height = getImgDimensions('out.png')
     return jsonify({
-        'data': 'data'
-        })
+            'imgFolder': app.config['UPLOAD_FOLDER'], 
+            'imgName': 'out.png',
+            'width': width,
+            'height': height
+            })
 
 
 @app.route("/images/<filename>")
@@ -118,15 +146,25 @@ def getImgDimensions(filename):
     (width, height) = image.size
     return width, height
 
+#def resize(filename):
+#    max_size = (1024,1024)
+#
+#    image = Image.open(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+#    out_image = re.sub("\.", "_transformed.", filename)
+#    out_image = re.sub("jpeg", "jpg", out_image)
+#    image.thumbnail(max_size, Image.ANTIALIAS)
+#    image.save(out_image, "JPEG")
+#    return out_image
+
 def resize(filename):
-    max_size = (1024,1024)
+   max_size = (1024,1024)
 
-    image = Image.open(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-    out_image = re.sub("\.", "_transformed.", filename)
-
-    image.thumbnail(max_size, Image.ANTIALIAS)
-    image.save(out_image)
-    return out_image
+   name = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+   out_image = re.sub("\.", "_transformed.", filename)
+   subprocess.call(["convert", name, "-define", "jpeg:extent=200kb", os.path.join(app.config['UPLOAD_FOLDER'], out_image)])
+   #image.thumbnail(max_size, Image.ANTIALIAS)
+   #image.save(out_image)
+   return out_image
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0',port=80)
+    app.run()

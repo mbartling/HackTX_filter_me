@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Page Title</title>
+	<title>Filter Me</title>
 	<style>
 	body {
 		background: rgba(150,150,150,1);
@@ -134,6 +134,7 @@
 				moveElementLeft(box3,"70%");
 				moveElementLeft(arrow,"31%");
 				moveElementLeft(equals,"63.7%");
+				startChecking();
 				break;
 		}
 	}
@@ -189,13 +190,14 @@
 							width:newW,
 							height:newH,
 							src:"/"+data['imgFolder']+data['imgName']
-						})
+						});
 					}
 		});
 	}
 	var imgs = new Array();
 	imgs[0] = new Image();
 	imgs[1] = new Image();
+	imgs[2] = new Image();
 	$(document).ready(function(e) {
 		//preview image
 		$(imgs[0]).load(function(){
@@ -207,6 +209,10 @@
 			$('#preview1').append($(this));
 			document.getElementById("prompt1").style.display = "none";
 			setTimeout(function(){changeStage(2);},600);
+		});
+		$(imgs[2]).load(function(){
+			$('#preview2').append($(this));
+			document.getElementById("prompt2").style.display = "none";
 		});
 		//upload script
 		$("#upload0").on('submit',(function(e) {
@@ -228,6 +234,7 @@
 	function reset() {
 		imgs[0] = new Image();
 		imgs[1] = new Image();
+		imgs[2] = new Image();
 		$(imgs[0]).load(function(){
 			$('#preview0').append($(this));
 			document.getElementById("prompt0").style.display = "none";
@@ -238,23 +245,67 @@
 			document.getElementById("prompt1").style.display = "none";
 			setTimeout(function(){changeStage(2);},600);
 		});
+		$(imgs[2]).load(function(){
+			$('#preview2').append($(this));
+			document.getElementById("prompt2").style.display = "none";
+		});
 		document.getElementById("preview0").innerHTML = "";
 		document.getElementById("preview1").innerHTML = "";
+		document.getElementById("preview2").innerHTML = "";
 		document.getElementById("prompt0").style.display = "";
 		document.getElementById("prompt1").style.display = "";
+		document.getElementById("prompt2").style.display = "";
 		droppedFiles = [null,null];
 		document.getElementById("file0").value = "";
 		document.getElementById("file1").value = "";
 		changeStage(0);
+	}
+	var interval;
+	function startChecking() {
+		intervalCheck();
+	}
+	function intervalCheck() {
+		$.ajax({
+			url: "/img3",
+			type: "POST",
+			data: new FormData(), //blank
+			contentType: false,
+			cache: false,
+			processData: false,
+			success: function(data) {
+						if (data['imgName'] == "") {
+							setTimeout(intervalCheck,2000);
+						} else {
+							var wFactor = w/(Math.max(0,data.width));
+							var hFactor = h/(Math.max(0,data.height));
+							if (wFactor >= hFactor) {
+								var newW = Math.round(data.width*wFactor);
+								var newH = Math.round(data.height*wFactor);
+								document.getElementById("preview2").style.top = ((newH-h)/(-2))+"px";
+								document.getElementById("preview2").style.left = "0px";
+							} else {
+								var newW = Math.round(data.width*hFactor);
+								var newH = Math.round(data.height*hFactor);
+								document.getElementById("preview2").style.top = "0px";
+								document.getElementById("preview2").style.left = ((newW-w)/(-2))+"px";
+							}
+							$(imgs[2]).attr({
+								width:newW,
+								height:newH,
+								src:"/"+data['imgFolder']+data['imgName']
+							});
+						}
+					}
+		});
 	}
 	</script>
 </head>
 <body>
 	<div id="container">
 		<div class="box animate" id="box3">
-			<div class="back"></div>
-			<div class="front">
-				box3
+			<div class="back"><div id="preview2"></div></div>
+			<div class="front" id="prompt2">
+				Loading...
 				<p class="small">Or, <a href="javascript:void(0);" onClick="reset();">start over</a>?</p>
 			</div>
 		</div>
