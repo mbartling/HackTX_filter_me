@@ -11,27 +11,7 @@
     <link rel="icon" href="../../favicon.ico">
     <style type="text/css">
     .modal-dialog {width:600px;}
-    .thumbnail {margin-bottom:6px;}
-    .btn-file {
-    position: relative;
-    overflow: hidden;
-    }
-    .btn-file input[type=file] {
-        position: absolute;
-        top: 0;
-        right: 0;
-        min-width: 100%;
-        min-height: 100%;
-        font-size: 100px;
-        text-align: right;
-        filter: alpha(opacity=0);
-        opacity: 0;
-        outline: none;
-        background: white;
-        cursor: inherit;
-        display: block;
-    }
-    </style>
+    .thumbnail {margin-bottom:6px;}</style>
     <title>Jumbotron Template for Bootstrap</title>
 
     <!-- Bootstrap core CSS -->
@@ -86,7 +66,7 @@
       <div class="container">
         <h1>Hello, world!</h1>
         <p>This is a template for a simple marketing or informational website. It includes a large callout called a jumbotron and three supporting pieces of content. Use it as a starting point to create something more unique.</p>
-        <p>Learn more &raquo;</p>
+        <p><a class="btn btn-primary btn-lg" href="#" role="button">Learn more &raquo;</a></p>
       </div>
     </div>
 
@@ -96,21 +76,17 @@
         <div class="col-md-4">
           <h2>Step 1: Image to Stylize</h2>
           <p>Please choose an image you would like to stylize</p>
-          <form id="upload1" action="" method="POST" enctype="multipart/form-data">
-              Browse<input id="imgBtn" type="file" name="file"><p id="fileName"></p>
-          </form>
+          <p><a class="btn btn-default" href="#" role="button">Select &raquo;</a><a class="btn btn-default" href="#" role="button">Submit &raquo;</a></p>
         </div>
         <div class="col-md-4">
           <h2>Step 2: Style Image</h2>
           <p>Please select an image used to generate a style filter </p>
-          <form id="upload2" action="" method="POST" enctype="multipart/form-data">
-              Browse<input id="styleBtn" type="file" name="file"><p id="styleName"></p>
-          </form>
+          <p><a class="btn btn-default" href="#" role="button">Select &raquo;</a><a class="btn btn-default" href="#" role="button">Submit &raquo;</a></p>
        </div>
         <div class="col-md-4">
           <h2>Result</h2>
           <p>Please wait for the image to process. May take up to a minute</p>
-          <p><a id="filterBtn" class="btn btn-default" href="#" role="button">Download &raquo;</a></p>
+          <p><a class="btn btn-default" href="#" role="button">Download &raquo;</a></p>
         </div>
       </div>
       <hr>
@@ -148,22 +124,7 @@
    </div>
   </div>
 </div>
-<div id="myModalRes" class="modal fade" tabindex="-1" role="dialog">
-  <div class="modal-dialog">
-  <div class="modal-content">
-  <div class="modal-header">
-    <button type="button" class="close" data-dismiss="modal">×</button>
-    <h3 class="modal-title">Result!</h3>
-  </div>
-  <div class="modal-body" id="resultBody">
-    
-  </div>
-  <div class="modal-footer">
-    <button class="btn btn-default" data-dismiss="modal">Close</button>
-  </div>
-   </div>
-  </div>
-</div>
+
 
       <hr>
 
@@ -185,80 +146,12 @@
 
 <!-- Latest compiled and minified JavaScript -->
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
-<script>
-
-    var image = new Image();
-    image.onload = function() {
-        /*
-        $('.modal-body').empty();
-        var title = $(this).parent('a').attr("title");
-        $('.modal-title').html(title);
-        $($(this).parents('div').html()).appendTo('.modal-body');
-        */
-        $('#resultBody').append($(this));
-        $('#myModalRes').modal({show:true});
-    }
-
-    $('.thumbnail').click(function(){
+<script>$('.thumbnail').click(function(){
     $('.modal-body').empty();
     var title = $(this).parent('a').attr("title");
     $('.modal-title').html(title);
     $($(this).parents('div').html()).appendTo('.modal-body');
     $('#myModal').modal({show:true});
-});
-
-    $('#imgBtn').on('change', function() {
-        console.log('posting img')
-        console.log(document.getElementById('imgBtn').value)
-        $.ajax({
-          url: '/img1',
-          type: 'POST',
-          data: new FormData(document.getElementById('upload1')),
-          contentType: false,
-          processData: false,
-          cache: false,
-          success: function(response) {
-            console.log('post file successful');
-            $('#imgBtn').append('<span>' + response['imgName'] + '</span>');
-          }
-        })      
-    });
-
-    $('#styleBtn').on('change', function() {
-        console.log('posting style')
-        console.log(document.getElementById('styleBtn').value)
-        $.ajax({
-          url: '/img2',
-          type: 'POST',
-          data: new FormData(document.getElementById('upload2')),
-          contentType: false,
-          processData: false,
-          cache: false,
-          success: function(response) {
-            console.log('post styke successful');
-            $('#styleBtn').append('<span>' + response['imgName'] + '</span>');
-          }
-        })      
-    }); 
-
-    $('#filterBtn').click(function() {
-        $.ajax({
-          url: '/img3',
-          type: 'POST',
-          data: '',
-          contentType: false,
-          processData: false,
-          cache: false,
-          success: function(response) {
-              console.log('new image');
-              url = response['imgFolder'] + response['imgName'];
-              image.src = url;
-          }           
-            
-          }
-        )
-    }) 
-
-</script>
+});</script>
   </body>
 </html>
