@@ -343,6 +343,7 @@
 	function initGallery() {
 		for (var i=1;i<=8;i++) {
 			presets[i] = new Image();
+			presets[i].alt = i;
 			$(presets[i]).load(function(){
 				$('#preset'+i).append($(this));
 			});
@@ -354,7 +355,8 @@
 				contentType: false,
 				cache: false,
 				processData: false,
-				success: function(i,data) {
+				success: function(data) {
+							var i = this.alt;
 							var w = document.getElementById("preset"+i).offsetWidth;
 							var h = document.getElementById("preset"+i).offsetHeight;
 							var wFactor = w/(Math.max(0,data.width));
@@ -366,7 +368,7 @@
 								var newW = Math.round(data.width*hFactor);
 								var newH = Math.round(data.height*hFactor);
 							}
-							$(presets[k]).attr({
+							$(presets[i]).attr({
 								width:newW,
 								height:newH,
 								src:"/presets/"+i+".jpg"
