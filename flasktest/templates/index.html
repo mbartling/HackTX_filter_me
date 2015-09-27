@@ -30,6 +30,11 @@
 		width:100%;
 		height:100%;
 	}
+	#preview0, #preview1 {
+		position:absolute;
+		top:0;
+		left:0;
+	}
 	.animate {
     	-webkit-transform: translateZ(0);
 		transition:all 1.2s ease-out;
@@ -228,7 +233,7 @@
 			=
 		</div>
 		<div class="box animate" id="box2">
-			<div class="back" id="preview1"></div>
+			<div class="back"><div id="preview1"></div></div>
 			<div class="front" id="prompt1">
 				<form id="upload1" action="" method="post" enctype="multipart/form-data">
 					<b>Now, choose a picture for a filter.</b>
@@ -242,7 +247,7 @@
 			&raquo;
 		</div>
 		<div class="box animate" id="box1">
-			<div class="back" id="preview0"></div>
+			<div class="back"><div id="preview0"></div></div>
 			<div class="front" id="prompt0">
 				<form id="upload0" action="" method="post" enctype="multipart/form-data">
 					<b>First, pick a picture to be styled.</b>
