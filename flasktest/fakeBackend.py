@@ -79,7 +79,7 @@ def upload_filter():
             })
     return "error"
 
-@app.route("/getNewImage", methods=["POST"])
+@app.route("/img3", methods=["POST"])
 def getNewImg():
     global CURRENT_IMG
     global CURRENT_FILTER
@@ -123,10 +123,14 @@ def getNewImg():
     subprocess.call(["scp", "-i", "compute-node-keys.pem", 
         "ubuntu@ec2-52-27-76-110.us-west-2.compute.amazonaws.com:images/out.png", 
         str(os.getcwd())+"/images/."])
-    print 'e'
+
+    width, height = getImgDimensions('out.png')
     return jsonify({
-        'data': 'data'
-        })
+            'imgFolder': app.config['UPLOAD_FOLDER'], 
+            'imgName': 'out.png',
+            'width': width,
+            'height': height
+            })
 
 
 @app.route("/images/<filename>")
