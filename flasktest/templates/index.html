@@ -344,7 +344,7 @@
 		for (var i=1;i<=8;i++) {
 			presets[i] = new Image();
 			presets[i].onload = function(){
-				$('#preset'+i).append($(this));
+				//$('#preset'+i).append($(this));
 			};
 			//get size data
 			$.ajax({
@@ -372,6 +372,7 @@
 								height:newH,
 								src:"/presets/"+i+".jpg"
 							});
+							$('#preset'+i).append($(this));
 						}
 			});
 		}
