@@ -337,7 +337,6 @@
 	function galleryMove(dir) {
 		galleryOffset -= dir*25;
 		if (galleryOffset <= -100 || galleryOffset > 0) galleryOffset += dir*25;
-		document.getElementById("galleryTable").style.transform = "translateX("+galleryOffset+"%)";
 	}
 	var presets = new Array();
 	function initGallery() {
@@ -346,7 +345,6 @@
 			presets[i].alt = i;
 			presets[i].onload = function(){
 				$('#preset'+this.alt).append($(this));
-				document.getElementById("galleryContainer").width = Math.round(document.getElementById("box2").offsetWidth*0.96)+"px";
 			};
 			//get size data
 			$.ajax({
@@ -370,8 +368,8 @@
 								var newH = Math.round(data.height*hFactor);
 							}
 							$(presets[i]).attr({
-								width:newW,
-								height:newH,
+								//width:newW,
+								//height:newH,
 								src:"/presets/"+i+".jpg"
 							});
 						}
