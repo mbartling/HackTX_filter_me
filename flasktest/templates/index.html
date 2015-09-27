@@ -189,7 +189,6 @@
 							height:newH,
 							src:"/"+data['imgFolder']+data['imgName']
 						})
-						changeStage(n+1);
 					}
 		});
 	}
@@ -201,10 +200,12 @@
 		$(imgs[0]).load(function(){
 			$('#preview0').append($(this));
 			document.getElementById("prompt0").style.display = "none";
+			changeState(1);
 		});
 		$(imgs[1]).load(function(){
 			$('#preview1').append($(this));
 			document.getElementById("prompt1").style.display = "none";
+			changeState(2);
 		});
 		//upload script
 		$("#upload0").on('submit',(function(e) {
@@ -229,10 +230,12 @@
 		$(imgs[0]).load(function(){
 			$('#preview0').append($(this));
 			document.getElementById("prompt0").style.display = "none";
+			changeState(1);
 		});
 		$(imgs[1]).load(function(){
 			$('#preview1').append($(this));
 			document.getElementById("prompt1").style.display = "none";
+			changeState(2);
 		});
 		document.getElementById("preview0").innerHTML = "";
 		document.getElementById("preview1").innerHTML = "";
