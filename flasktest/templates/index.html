@@ -346,6 +346,7 @@
 			presets[i].alt = i;
 			presets[i].onload = function(){
 				$('#preset'+this.alt).append($(this));
+				document.getElementById("galleryContainer").width = Math.round(document.getElementById("box2").offsetWidth*0.96)+"px";
 			};
 			//get size data
 			$.ajax({
