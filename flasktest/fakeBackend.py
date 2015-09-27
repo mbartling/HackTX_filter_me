@@ -3,13 +3,16 @@ from flask import render_template, request, jsonify
 from flask import redirect, url_for, send_file, send_from_directory
 from werkzeug import secure_filename
 from PIL import Image
-import os, subprocess, re
+from math import random
+import os, subprocess, re, time
 
 UPLOAD_FOLDER = 'images/'
 ALLOWED_EXTENSIONS = set(['jpg', 'jpeg', 'png'])
 
 CURRENT_IMG = ""
 CURRENT_FILTER = ""
+
+random.seed(time.gmtime())
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -118,8 +121,9 @@ def getNewImg():
     #    "python", "HackTX_filter_me/neural_artistic_style/neural_artistic_style.py", 
     #    "--subject", currentImgOnServer, "--style", currentFilterOnServer, 
     #    "--iterations", "75","--animations","images/animations" ,"--output", "images/out.png\""])
-    os.system("ssh -i compute-node-keys.pem ubuntu@ec2-52-27-76-110.us-west-2.compute.amazonaws.com \"export PATH=/usr/local/cuda/bin:$PATH;export PATH=$PATH:/usr/local/cuda-6.5/bin;export LD_LIBRARY_PATH=/usr/local/cuda-6.5/lib64:$LD_LIBRARY_PATH:/usr/local/lib;python HackTX_filter_me/neural_artistic_style/neural_artistic_style.py --subject %s --style %s --output images/out.png --iterations 50 --animation images/animate\"" % (currentImgOnServer, currentFilterOnServer ))
+    os.system("ssh -i compute-node-keys.pem ubuntu@ec2-52-27-76-110.us-west-2.compute.amazonaws.com \"export PATH=/usr/local/cuda/bin:$PATH;export PATH=$PATH:/usr/local/cuda-6.5/bin;export LD_LIBRARY_PATH=/usr/local/cuda-6.5/lib64:$LD_LIBRARY_PATH:/usr/local/lib;python HackTX_filter_me/neural_artistic_style/neural_artistic_style.py --subject %s --style %s --output images/out_%d.png --iterations 50 --animation images/animate\"" % (currentImgOnServer, currentFilterOnServer, rand))
     print 'd'
+    rand = random.randint(0, 5000000)
     subprocess.call(["scp", "-i", "compute-node-keys.pem", 
         "ubuntu@ec2-52-27-76-110.us-west-2.compute.amazonaws.com:images/out.png", 
         str(os.getcwd())+"/images/."])
@@ -127,7 +131,7 @@ def getNewImg():
     width, height = getImgDimensions('out.png')
     return jsonify({
             'imgFolder': app.config['UPLOAD_FOLDER'], 
-            'imgName': 'out.png',
+            'imgName': 'out_%d.png' % rand,
             'width': width,
             'height': height
             })
