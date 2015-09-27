@@ -149,6 +149,7 @@
 	}
 	function fileDropped(e,n) {
 		cancelEvent(e);
+		$('#box'+(n+1)).removeClass("highlight");
 		droppedFiles[n] = e.dataTransfer.files[0];
 		submitted(e,n,true);
 	}
