@@ -235,7 +235,6 @@
 	imgs[1] = new Image();
 	imgs[2] = new Image();
 	$(document).ready(function(e) {
-		document.body.addEventListener('touchstart', function(e){ e.preventDefault(); });
 		//preview image
 		$(imgs[0]).load(function(){
 			$('#preview0').append($(this));
