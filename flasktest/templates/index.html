@@ -210,8 +210,8 @@
 			cache: false,
 			processData:false,
 			success: function(data) {
-						var wFactor = w/(Math.max(0,data.width));
-						var hFactor = h/(Math.max(0,data.height));
+						var wFactor = w/(Math.max(1,data.width));
+						var hFactor = h/(Math.max(1,data.height));
 						if (wFactor >= hFactor) {
 							var newW = Math.round(data.width*wFactor);
 							var newH = Math.round(data.height*wFactor);
@@ -357,10 +357,10 @@
 				processData: false,
 				success: function(data) {
 							var i = parseInt(this.url.charAt(12));
-							var w = document.getElementById("preset0").offsetWidth;
-							var h = document.getElementById("preset0").offsetHeight;
-							var wFactor = w/(Math.max(0,data.width));
-							var hFactor = h/(Math.max(0,data.height));
+							var w = document.getElementById("preset1").offsetWidth;
+							var h = document.getElementById("preset1").offsetHeight;
+							var wFactor = w/(Math.max(1,data.width));
+							var hFactor = h/(Math.max(1,data.height));
 							if (wFactor >= hFactor) {
 								var newW = Math.round(data.width*wFactor);
 								var newH = Math.round(data.height*wFactor);
