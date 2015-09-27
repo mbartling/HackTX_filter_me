@@ -125,11 +125,6 @@
 				break;
 		}
 	}
-	function init() {
-		setTimeout(function(){changeStage(1);},3000);
-		setTimeout(function(){changeStage(2);},6000);
-	}
-	window.onload = init;
 	/* form */
 	var droppedFiles = [null,null];
 	function cancelEvent(e) {
@@ -158,7 +153,7 @@
 			formData = new FormData(document.getElementById("upload"+n));
 		}
 		$.ajax({
-			url: "/img"+n,
+			url: "/img"+(n+1),
 			type: "POST",
 			data: formData,
 			contentType: false,
@@ -170,6 +165,7 @@
 							height:h,
 							src:"/"+data['imgFolder']+data['imgName']
 						})
+						changeStage(n+1);
 					}
 		});
 	}
